@@ -1,8 +1,8 @@
 spec = Gem::Specification.new do |s|
   s.name = "anemone"
   s.version = "0.7.2"
-  s.author = "Chris Kite"
-  s.homepage = "http://anemone.rubyforge.org"
+  s.author = ["Chris Kite", "Pheonix7284"]
+  s.homepage = "https://github.com/Pheonix7284/anemone"
   s.rubyforge_project = "anemone"
   s.platform = Gem::Platform::RUBY
   s.summary = "Anemone web-spider framework"
@@ -11,7 +11,7 @@ spec = Gem::Specification.new do |s|
   s.has_rdoc = true
   s.rdoc_options << '-m' << 'README.rdoc' << '-t' << 'Anemone'
   s.extra_rdoc_files = ["README.rdoc"]
-  s.add_dependency("nokogiri", ">= 1.3.0")
+  s.add_dependency("nokogiri", ">= 1.6.0")
   s.add_dependency("robotex", ">= 1.0.0")
 
   s.add_development_dependency "rake", ">=0.9.2"
@@ -30,6 +30,7 @@ spec = Gem::Specification.new do |s|
     LICENSE.txt
     CHANGELOG.rdoc
     README.rdoc
+    CONTRIBUTORS.rdoc
     Rakefile
   ] + Dir['lib/**/*.rb']
 

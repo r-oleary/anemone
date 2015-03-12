@@ -110,7 +110,7 @@ module Anemone
       it 'handles a from_hash with a nil redirect_to' do
         page_hash = @page.to_hash
         page_hash['redirect_to'] = nil
-        lambda{Page.from_hash(page_hash)}.should_not raise_error(URI::InvalidURIError)
+        expect {Page.from_hash(page_hash) }.not_to raise_error
         Page.from_hash(page_hash).redirect_to.should be_nil
       end
     end
@@ -129,7 +129,7 @@ module Anemone
     describe "#links" do
       it "should not convert anchors to %23" do
         page = @http.fetch_page(FakePage.new('', :body => '<a href="#top">Top</a>').url)
-        page.links.should have(1).link
+        page.links.size.should eq(1)
         page.links.first.to_s.should == SPEC_DOMAIN
       end
     end

@@ -1,60 +1,61 @@
-begin
-  require 'tokyocabinet'
-rescue LoadError
-  puts $!
-  puts "You need the tokyocabinet gem to use Anemone::Storage::TokyoCabinet"
-  exit
-end
+#outdated/incompatible with ruby 2.2.0 gems
+# begin
+#   require 'tokyocabinet'
+# rescue LoadError
+#   puts $!
+#   puts "You need the tokyocabinet gem to use Anemone::Storage::TokyoCabinet"
+#   exit
+# end
 
-require 'forwardable'
+# require 'forwardable'
 
-module Anemone
-  module Storage
-    class TokyoCabinet
-      extend Forwardable
+# module Anemone
+#   module Storage
+#     class TokyoCabinet
+#       extend Forwardable
 
-      def_delegators :@db, :close, :size, :keys, :has_key?
+#       def_delegators :@db, :close, :size, :keys, :has_key?
 
-      def initialize(file)
-        raise "TokyoCabinet filename must have .tch extension" if File.extname(file) != '.tch'
-        @db = ::TokyoCabinet::HDB::new
-        @db.open(file, ::TokyoCabinet::HDB::OWRITER | ::TokyoCabinet::HDB::OCREAT)
-        @db.clear
-      end
+#       def initialize(file)
+#         raise "TokyoCabinet filename must have .tch extension" if File.extname(file) != '.tch'
+#         @db = ::TokyoCabinet::HDB::new
+#         @db.open(file, ::TokyoCabinet::HDB::OWRITER | ::TokyoCabinet::HDB::OCREAT)
+#         @db.clear
+#       end
 
-      def [](key)
-        if value = @db[key]
-          load_value(value)
-        end
-      end
+#       def [](key)
+#         if value = @db[key]
+#           load_value(value)
+#         end
+#       end
 
-      def []=(key, value)
-        @db[key] = [Marshal.dump(value)].pack("m")
-      end
+#       def []=(key, value)
+#         @db[key] = [Marshal.dump(value)].pack("m")
+#       end
 
-      def delete(key)
-        value = self[key]
-        @db.delete(key)
-        value
-      end
+#       def delete(key)
+#         value = self[key]
+#         @db.delete(key)
+#         value
+#       end
 
-      def each
-        @db.keys.each do |k|
-          yield(k, self[k])
-        end
-      end
+#       def each
+#         @db.keys.each do |k|
+#           yield(k, self[k])
+#         end
+#       end
 
-      def merge!(hash)
-        hash.each { |key, value| self[key] = value }
-        self
-      end
+#       def merge!(hash)
+#         hash.each { |key, value| self[key] = value }
+#         self
+#       end
 
-      private
+#       private
 
-      def load_value(value)
-        Marshal.load(value.unpack("m")[0])
-      end
+#       def load_value(value)
+#         Marshal.load(value.unpack("m")[0])
+#       end
 
-    end
-  end
-end
+#     end
+#   end
+# end

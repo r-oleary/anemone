@@ -21,9 +21,10 @@ spec = Gem::Specification.new do |s|
   s.add_development_dependency "redis", ">=2.2.0"
   s.add_development_dependency "mongo", ">=1.3.1"
   s.add_development_dependency "bson_ext", ">=1.3.1"
-  s.add_development_dependency "tokyocabinet", ">=1.29"
-  s.add_development_dependency "kyotocabinet-ruby", ">=1.27.1"
   s.add_development_dependency "sqlite3", ">=1.3.4"
+  #outdated/incompatible with ruby 2.2.0 gems
+  #s.add_development_dependency "tokyocabinet", ">=1.29"
+  #s.add_development_dependency "kyotocabinet-ruby", ">=1.27.1"
 
   s.files = %w[
     VERSION

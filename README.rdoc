@@ -29,10 +29,13 @@ See the scripts under the <tt>lib/anemone/cli</tt> directory for examples of sev
 To test and develop this gem, additional requirements are:
 * rspec
 * fakeweb
-* tokyocabinet
-* kyotocabinet-ruby
+* tokyocabinet*
+* kyotocabinet-ruby*
 * mongo
 * redis
 * sqlite3
 
 You will need to have KyotoCabinet, {Tokyo Cabinet}[http://fallabs.com/tokyocabinet/], {MongoDB}[http://www.mongodb.org/], and {Redis}[http://code.google.com/p/redis/] installed on your system and running.
+
+== *Notes
+* Issues with kyotocabinet-ruby and tokyo-cabinet - commented out while pending possible removal #outdated/incompatible with ruby 2.2.0 gems

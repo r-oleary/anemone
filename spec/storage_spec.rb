@@ -1,7 +1,8 @@
 $:.unshift(File.dirname(__FILE__))
 require 'spec_helper'
-
-%w[pstore tokyo_cabinet kyoto_cabinet sqlite3 mongodb redis].each { |file| require "anemone/storage/#{file}.rb" }
+#outdated/incompatible with ruby 2.2.0 gems
+# %w[pstore tokyo_cabinet kyoto_cabinet sqlite3 mongodb redis].each { |file| require "anemone/storage/#{file}.rb" }
+%w[pstore sqlite3 mongodb redis].each { |file| require "anemone/storage/#{file}.rb" }
 
 module Anemone
   describe Storage do
@@ -18,34 +19,34 @@ module Anemone
         Anemone::Storage.PStore(test_file).should be_an_instance_of(Anemone::Storage::PStore)
       end
     end
+#outdated/incompatible with ruby 2.2.0 gems
+    # describe ".TokyoCabinet" do
+    #   it "returns a TokyoCabinet adapter" do
+    #     test_file = 'test.tch'
+    #     store = Anemone::Storage.TokyoCabinet(test_file)
+    #     store.should be_an_instance_of(Anemone::Storage::TokyoCabinet)
+    #     store.close
+    #   end
+    # end
 
-    describe ".TokyoCabinet" do
-      it "returns a TokyoCabinet adapter" do
-        test_file = 'test.tch'
-        store = Anemone::Storage.TokyoCabinet(test_file)
-        store.should be_an_instance_of(Anemone::Storage::TokyoCabinet)
-        store.close
-      end
-    end
+    # describe ".KyotoCabinet" do
+    #   context "when the file is specified" do
+    #     it "returns a KyotoCabinet adapter using that file" do
+    #       test_file = 'test.kch'
+    #       store = Anemone::Storage.KyotoCabinet(test_file)
+    #       store.should be_an_instance_of(Anemone::Storage::KyotoCabinet)
+    #       store.close
+    #     end
+    #   end
 
-    describe ".KyotoCabinet" do
-      context "when the file is specified" do
-        it "returns a KyotoCabinet adapter using that file" do
-          test_file = 'test.kch'
-          store = Anemone::Storage.KyotoCabinet(test_file)
-          store.should be_an_instance_of(Anemone::Storage::KyotoCabinet)
-          store.close
-        end
-      end
-
-      context "when no file is specified" do
-        it "returns a KyotoCabinet adapter using the default filename" do
-          store = Anemone::Storage.KyotoCabinet
-          store.should be_an_instance_of(Anemone::Storage::KyotoCabinet)
-          store.close
-        end
-      end
-    end
+    #   context "when no file is specified" do
+    #     it "returns a KyotoCabinet adapter using the default filename" do
+    #       store = Anemone::Storage.KyotoCabinet
+    #       store.should be_an_instance_of(Anemone::Storage::KyotoCabinet)
+    #       store.close
+    #     end
+    #   end
+    # end
 
     describe ".SQLite3" do
       it "returns a SQLite3 adapter" do
@@ -72,7 +73,7 @@ module Anemone
       end
     end
 
-    module Storage
+
       shared_examples_for "storage engine" do
 
         before(:each) do
@@ -159,50 +160,50 @@ module Anemone
           File.delete @test_file rescue nil
         end
       end
+#outdated/incompatible with ruby 2.2.0 gems
+      # describe TokyoCabinet do
+      #   it_should_behave_like "storage engine"
 
-      describe TokyoCabinet do
-        it_should_behave_like "storage engine"
+      #   before(:each) do
+      #     @test_file = 'test.tch'
+      #     File.delete @test_file rescue nil
+      #     @store =  Anemone::Storage.TokyoCabinet(@test_file)
+      #   end
 
-        before(:each) do
-          @test_file = 'test.tch'
-          File.delete @test_file rescue nil
-          @store =  Anemone::Storage.TokyoCabinet(@test_file)
-        end
+      #   after(:each) do
+      #     @store.close
+      #   end
 
-        after(:each) do
-          @store.close
-        end
+      #   after(:all) do
+      #     File.delete @test_file rescue nil
+      #   end
 
-        after(:all) do
-          File.delete @test_file rescue nil
-        end
+      #   it "should raise an error if supplied with a file extension other than .tch" do
+      #     lambda { Anemone::Storage.TokyoCabinet('test.tmp') }.should raise_error(RuntimeError)
+      #   end
+      # end
 
-        it "should raise an error if supplied with a file extension other than .tch" do
-          lambda { Anemone::Storage.TokyoCabinet('test.tmp') }.should raise_error(RuntimeError)
-        end
-      end
+      # describe KyotoCabinet do
+      #   it_should_behave_like "storage engine"
 
-      describe KyotoCabinet do
-        it_should_behave_like "storage engine"
+      #   before(:each) do
+      #     @test_file = 'test.kch'
+      #     File.delete @test_file rescue nil
+      #     @store =  Anemone::Storage.KyotoCabinet(@test_file)
+      #   end
 
-        before(:each) do
-          @test_file = 'test.kch'
-          File.delete @test_file rescue nil
-          @store =  Anemone::Storage.KyotoCabinet(@test_file)
-        end
+      #   after(:each) do
+      #     @store.close
+      #   end
 
-        after(:each) do
-          @store.close
-        end
+      #   after(:all) do
+      #     File.delete @test_file rescue nil
+      #   end
 
-        after(:all) do
-          File.delete @test_file rescue nil
-        end
-
-        it "should raise an error if supplied with a file extension other than .kch" do
-          lambda { Anemone::Storage.KyotoCabinet('test.tmp') }.should raise_error(RuntimeError)
-        end
-      end
+      #   it "should raise an error if supplied with a file extension other than .kch" do
+      #     lambda { Anemone::Storage.KyotoCabinet('test.tmp') }.should raise_error(RuntimeError)
+      #   end
+      # end
 
       describe SQLite3 do
         it_should_behave_like "storage engine"
@@ -247,6 +248,6 @@ module Anemone
         end
       end
 
-    end
+   
   end
 end

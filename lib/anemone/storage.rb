@@ -13,15 +13,16 @@ module Anemone
       self::PStore.new(*args)
     end
 
-    def self.TokyoCabinet(file = 'anemone.tch')
-      require 'anemone/storage/tokyo_cabinet'
-      self::TokyoCabinet.new(file)
-    end
+    #outdated/incompatible with ruby 2.2.0 gems
+    # def self.TokyoCabinet(file = 'anemone.tch')
+    #   require 'anemone/storage/tokyo_cabinet'
+    #   self::TokyoCabinet.new(file)
+    # end
 
-    def self.KyotoCabinet(file = 'anemone.kch')
-      require 'anemone/storage/kyoto_cabinet'
-      self::KyotoCabinet.new(file)
-    end
+    # def self.KyotoCabinet(file = 'anemone.kch')
+    #   require 'anemone/storage/kyoto_cabinet'
+    #   self::KyotoCabinet.new(file)
+    # end
 
     def self.MongoDB(mongo_db = nil, collection_name = 'pages')
       require 'anemone/storage/mongodb'

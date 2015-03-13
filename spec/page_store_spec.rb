@@ -1,6 +1,8 @@
 $:.unshift(File.dirname(__FILE__))
 require 'spec_helper'
-%w[pstore tokyo_cabinet sqlite3 mongodb redis].each { |file| require "anemone/storage/#{file}.rb" }
+#outdated/incompatible with ruby 2.2.0 gems
+# %w[pstore tokyo_cabinet sqlite3].each { |file| require "anemone/storage/#{file}.rb" }
+%w[pstore sqlite3 mongodb redis].each { |file| require "anemone/storage/#{file}.rb" }
 
 module Anemone
   describe PageStore do
@@ -106,24 +108,24 @@ module Anemone
         File.delete(@test_file) if File.exists?(@test_file)
       end
     end
+#outdated/incompatible with ruby 2.2.0 gems
+    # describe Storage::TokyoCabinet do
+    #   it_should_behave_like "page storage"
 
-    describe Storage::TokyoCabinet do
-      it_should_behave_like "page storage"
+    #   before(:each) do
+    #     @test_file = 'test.tch'
+    #     File.delete(@test_file) if File.exists?(@test_file)
+    #     @opts = {:storage => @store = Storage.TokyoCabinet(@test_file)}
+    #   end
 
-      before(:each) do
-        @test_file = 'test.tch'
-        File.delete(@test_file) if File.exists?(@test_file)
-        @opts = {:storage => @store = Storage.TokyoCabinet(@test_file)}
-      end
+    #   after(:each) do
+    #     @store.close
+    #   end
 
-      after(:each) do
-        @store.close
-      end
-
-      after(:each) do
-        File.delete(@test_file) if File.exists?(@test_file)
-      end
-    end
+    #   after(:each) do
+    #     File.delete(@test_file) if File.exists?(@test_file)
+    #   end
+    # end
 
     describe Storage::SQLite3 do
       it_should_behave_like "page storage"

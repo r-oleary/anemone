@@ -1,4 +1,5 @@
 = Anemone
+With Ruby 2.2.0 and RSpec 3 Support.
 
 Anemone is a web spider framework that can spider a domain and collect useful
 information about the pages it visits. It is versatile, allowing you to

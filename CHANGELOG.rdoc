@@ -1,8 +1,13 @@
-== Pending release
+== 0.8.0 / 2015-03-16
+Skipping up version numbers for first fork release!
 
 *Forked from https://github.com/chriskite/anemone
   *adding dev branches
   *updating misc files with fork information
+  *commenting out non-compatable dependencies
+  *updating to ruby 2.2.0
+  *updating to rspec 3
+  *updating gem versions
  
 == 0.7.2 / 2012-05-30
 

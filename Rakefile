@@ -1,5 +1,5 @@
 require 'rspec/core/rake_task'
-require 'rake/rdoctask'
+require 'rdoc/task'
 
 desc "Run all specs"
 RSpec::Core::RakeTask.new(:rspec) do |spec|

@@ -58,8 +58,9 @@ module Anemone
       return @links unless @links.nil?
       @links = []
       return @links if !doc
+      return @links if no_index?
 
-      doc.search("//a[@href]").each do |a|
+      doc.search('//a[@href and not(contains(@rel, "nofollow"))]').each do |a|
         u = a['href']
         next if u.nil? or u.empty?
         abs = to_absolute(u) rescue next
@@ -113,6 +114,18 @@ module Anemone
     #
     def html?
       !!(content_type =~ %r{^(text/html|application/xhtml+xml)\b})
+    end
+
+    def image?
+      !!(content_type =~ %r{^(image/gif|image/jpeg|image/pjpeg|image/png|image/svg+xml|image/tiff|image/vnd.djvu|image/example)\b})
+    end
+
+    def video?
+      !!(content_type =~ %r{^(video/avi|video/example|video/mpeg|video/mp4|video/ogg|video/quicktime|video/webm|video/x-matroska|video/x-ms-wmv|video/x-flv)\b})
+    end
+
+    def pdf?
+      !!(content_type =~ %r{^(application/pdf)\b})
     end
 
     #
@@ -213,5 +226,10 @@ module Anemone
       end
       page
     end
+
+    def no_index?
+      doc.search("//meta[@name='robots' and contains(@content, 'noindex') and contains(@content, 'follow')]").any?
+    end
+
   end
 end

@@ -3,3 +3,6 @@ rvm:
   - 2.2.0
 script:
  - bundle exec rspec spec
+services:
+  - redis-server
+  - mongodb

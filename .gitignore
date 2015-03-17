@@ -5,3 +5,7 @@ test.tch
 *.kch
 rdoc
 .env
+test.pstore
+.ruby-version
+.ruby-gemset
+.rspec

@@ -1,5 +1,6 @@
 require 'nokogiri'
 require 'ostruct'
+require 'string'
 require 'webrick/cookie'
 
 module Anemone
@@ -47,6 +48,8 @@ module Anemone
       @response_time = params[:response_time]
       @body = params[:body]
       @error = params[:error]
+      @skip_no_follow = params[:skip_no_follow]
+      @follow_subdomain = params[:follow_subdomain]
 
       @fetched = !params[:code].nil?
     end
@@ -60,11 +63,18 @@ module Anemone
       return @links if !doc
       return @links if no_index?
 
-      doc.search('//a[@href and not(contains(@rel, "nofollow"))]').each do |a|
+      docs = 
+        if @skip_no_follow
+          doc.search('//a[@href and not(contains(@rel, "nofollow"))]')
+        else
+          doc.search('//a[@href]')
+        end
+
+      docs.each do |a|
         u = a['href']
         next if u.nil? or u.empty?
         abs = to_absolute(u) rescue next
-        @links << abs if in_domain?(abs)
+        @links << abs if in_domain?(abs) || is_subdomain?(u)
       end
       @links.uniq!
       @links
@@ -185,6 +195,10 @@ module Anemone
       uri.host == @url.host
     end
 
+    def is_subdomain?(link)
+      @follow_subdomain && @follow_subdomain.include?(link.get_domain)
+    end
+
     def marshal_dump
       [@url, @headers, @data, @body, @links, @code, @visited, @depth, @referer, @redirect_to, @response_time, @fetched]
     end
@@ -228,7 +242,7 @@ module Anemone
     end
 
     def no_index?
-      doc.search("//meta[@name='robots' and contains(@content, 'noindex') and contains(@content, 'follow')]").any?
+      @skip_no_follow && doc.search("//meta[@name='robots' and contains(@content, 'noindex') and contains(@content, 'follow')]").any?
     end
 
   end

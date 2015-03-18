@@ -181,5 +181,28 @@ module Anemone
       page.to_absolute(upward_relative_path).should == URI("#{upward_base}#{relative_path}")      
     end
 
+    describe "#is_subdomain?" do
+      before do
+        @main_domain = "www.ackmanndickenson.com"
+        @sub_domain = "www.subdomain.ackmanndickenson.com"
+        @other_subdomain = "www.map.google.com"
+      end
+
+      it "should match subdomain with option :follow_subdomain true" do
+        page = Anemone::Page.new(@main_domain, :follow_subdomain => ["ackmanndickenson.com"])
+        expect(page.is_subdomain?(@sub_domain)).to eq(true)
+      end
+
+      it "should match subdomain with option :follow_subdomain set to other domain" do
+        page = Anemone::Page.new(@main_domain, :follow_subdomain => ["google.com"])
+        expect(page.is_subdomain?(@other_subdomain)).to eq(true)
+      end
+
+      it "should match subdomain with option :follow_subdomain false" do
+        page = Anemone::Page.new(@main_domain, :follow_subdomain => false)
+        expect(page.is_subdomain?(@sub_domain)).to eq(false)
+      end
+    end
+
   end
 end

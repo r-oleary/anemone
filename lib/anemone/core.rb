@@ -1,5 +1,6 @@
 require 'thread'
 require 'robotex'
+require 'string'
 require 'anemone/tentacle'
 require 'anemone/page'
 require 'anemone/exceptions'
@@ -9,7 +10,7 @@ require 'anemone/storage/base'
 
 module Anemone
 
-  VERSION = '0.8.0';
+  VERSION = '0.8.1';
 
   #
   # Convenience method to start a crawl
@@ -55,7 +56,11 @@ module Anemone
       # proxy server port number
       :proxy_port => false,
       # HTTP read timeout in seconds
-      :read_timeout => nil
+      :read_timeout => nil,
+      # Follow no-follow links
+      :skip_no_follow => false,
+      # Follow subdomain
+      :follow_subdomain => true
     }
 
     # Create setter methods for all options to be called from the crawl block
@@ -79,6 +84,11 @@ module Anemone
       @skip_link_patterns = []
       @after_crawl_blocks = []
       @opts = opts
+      if @opts[:follow_subdomain].is_a?(Array)
+        @opts[:follow_subdomain] |= get_domains
+      elsif @opts[:follow_subdomain] == true
+        @opts[:follow_subdomain] = get_domains
+      end
 
       yield self if block_given?
     end
@@ -190,6 +200,10 @@ module Anemone
       @tentacles.each { |thread| thread.join }
       do_after_crawl_blocks
       self
+    end
+
+    def get_domains
+      @urls.map { |url| url.to_s.get_domain }.compact.uniq
     end
 
     private

@@ -84,9 +84,10 @@ module Anemone
       @skip_link_patterns = []
       @after_crawl_blocks = []
       @opts = opts
+
       if @opts[:follow_subdomain].is_a?(Array)
         @opts[:follow_subdomain] |= get_domains
-      elsif @opts[:follow_subdomain] == true
+      elsif @opts[:follow_subdomain].nil? || @opts[:follow_subdomain] == true
         @opts[:follow_subdomain] = get_domains
       end
 

@@ -391,5 +391,26 @@ module Anemone
       end
     end
 
+    describe "with options :follow_subdomain" do
+      before do
+        @pages = []
+        @pages << FakePage.new('0', :links => ['1', '2'])
+        @pages << FakePage.new('1', :hrefs => 'http://www.subdomain.example.com/')
+        @pages << FakePage.new('2', :hrefs => 'http://www.other.com/')
+      end
+
+      it "should get subdomain page by default" do
+        expect(Anemone.crawl(@pages[0].url).pages.size).to eq(4)
+      end
+
+      it "should not get subdomain page when :follow_subdomain => false" do
+        expect(Anemone.crawl(@pages[0].url, :follow_subdomain => false).pages.size).to eq(3)
+      end
+
+      it "should get other domain page when included" do
+        expect(Anemone.crawl(@pages[0].url, :follow_subdomain => ["other.com"]).pages.size).to eq(5)
+      end
+    end
+
   end
 end

@@ -39,7 +39,9 @@ module Anemone
                                       :referer => referer,
                                       :depth => depth,
                                       :redirect_to => redirect_to,
-                                      :response_time => response_time)
+                                      :response_time => response_time,
+                                      :skip_no_follow => @opts[:skip_no_follow],
+                                      :follow_subdomain => @opts[:follow_subdomain])
         end
 
         return pages

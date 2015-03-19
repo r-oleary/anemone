@@ -346,5 +346,71 @@ module Anemone
       end
     end
 
+    describe "#get_domain" do
+      it "should get domain name from URL" do
+        urls = %w(
+          ackmanndickenson.com
+          http://ackmanndickenson.com
+          https://ackmanndickenson.com
+          www.ackmanndickensons.com
+          http://www.ackmanndickensons.com
+          https://www.ackmanndickensons.com
+          subdomain.ackmanndickenson.com
+          http://subdomain.ackmanndickenson.com
+          https://subdomain.ackmanndickenson.com
+          www.subdomain.ackmanndickensons.com
+          http://www.subdomain.ackmanndickensons.com
+          https://www.subdomain.ackmanndickensons.com
+          subdomain.sub-subdomain.ackmanndickenson.com
+          http://subdomain.sub-subdomain.ackmanndickenson.com
+          https://subdomain.sub-subdomain.ackmanndickenson.com
+          www.subdomain.sub-subdomain.ackmanndickensons.com
+          http://www.subdomain.sub-subdomain.ackmanndickensons.com
+          https://www.subdomain.sub-subdomain.ackmanndickensons.com
+          ackmanndickenson.net
+          http://ackmanndickenson.net
+          https://ackmanndickenson.net
+          www.ackmanndickensons.net
+          http://www.ackmanndickensons.net
+          https://www.ackmanndickensons.net
+          ackmanndickenson.com/about-us
+          http://ackmanndickenson.com/about-us
+          https://ackmanndickenson.com/about-us
+          www.ackmanndickensons.com/about-us
+          http://www.ackmanndickensons.com/about-us
+          https://www.ackmanndickensons.com/about-us
+          ackmanndickenson.com?search=this
+          http://ackmanndickenson.com?search=this
+          https://ackmanndickenson.com?search=this
+          www.ackmanndickensons.com?search=this
+          http://www.ackmanndickensons.com?search=this
+          https://www.ackmanndickensons.com?search=this
+        )
+        core = Anemone::Core.new(urls)
+        expect(core.get_domains).to eq(["ackmanndickenson.com", "ackmanndickensons.com", "ackmanndickenson.net", "ackmanndickensons.net"])
+      end
+    end
+
+    describe "with options :follow_subdomain" do
+      before do
+        @pages = []
+        @pages << FakePage.new('0', :links => ['1', '2'])
+        @pages << FakePage.new('1', :hrefs => 'http://www.subdomain.example.com/')
+        @pages << FakePage.new('2', :hrefs => 'http://www.other.com/')
+      end
+
+      it "should get subdomain page by default" do
+        expect(Anemone.crawl(@pages[0].url).pages.size).to eq(4)
+      end
+
+      it "should not get subdomain page when :follow_subdomain => false" do
+        expect(Anemone.crawl(@pages[0].url, :follow_subdomain => false).pages.size).to eq(3)
+      end
+
+      it "should get other domain page when included" do
+        expect(Anemone.crawl(@pages[0].url, :follow_subdomain => ["other.com"]).pages.size).to eq(5)
+      end
+    end
+
   end
 end

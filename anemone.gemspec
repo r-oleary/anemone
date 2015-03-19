@@ -1,6 +1,6 @@
 spec = Gem::Specification.new do |s|
   s.name = "anemone"
-  s.version = "0.8.0"
+  s.version = "0.8.1"
   s.author = ["Chris Kite", "Pheonix7284"]
   s.homepage = "https://github.com/Pheonix7284/anemone"
   s.rubyforge_project = "anemone"
@@ -22,6 +22,7 @@ spec = Gem::Specification.new do |s|
   s.add_development_dependency "mongo", ">=1.12.0"
   s.add_development_dependency "bson_ext", ">=1.3.1"
   s.add_development_dependency "sqlite3", ">=1.3.10"
+  s.add_development_dependency "pry-rails"
   #outdated/incompatible with ruby 2.2.0 gems
   #s.add_development_dependency "tokyocabinet", ">=1.29"
   #s.add_development_dependency "kyotocabinet-ruby", ">=1.27.1"

@@ -1,3 +1,9 @@
+== 0.8.1 / 2015-03-18
+* Add options to :skip_no_follow => false and :follow_subdomain => true
+* If :skip_no_follow => true, all links or pages that have nofollow tag will be ignore
+* If :follow_subdomain => true, all subdomain pages will be crawled
+* We can also set :follow_subdomain => ["abc.com"] to allow it to follow new domain.
+
 == 0.8.0 / 2015-03-16
 Skipping up version numbers for first fork release!
 

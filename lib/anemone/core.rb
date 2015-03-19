@@ -60,7 +60,12 @@ module Anemone
       # Follow no-follow links
       :skip_no_follow => false,
       # Follow subdomain
-      :follow_subdomain => true
+      :follow_subdomain => true,
+      #number of crawled pages queued
+      :pages_queue_limit => 1000,
+      #number of unique links collected per crawl
+      :link_limit => 500000
+
     }
 
     # Create setter methods for all options to be called from the crawl block
@@ -84,6 +89,7 @@ module Anemone
       @skip_link_patterns = []
       @after_crawl_blocks = []
       @opts = opts
+      @end_crawl = false
 
       if @opts[:follow_subdomain].is_a?(Array)
         @opts[:follow_subdomain] |= get_domains
@@ -154,6 +160,16 @@ module Anemone
     end
 
     #
+    # Blocks the crawler from visiting the next page in the queue.
+    #
+    # Call this within a page block. 
+    # Current page will finish, but all pages and links currently in queue are discared.
+    #
+    def end_crawl
+      @end_crawl = true
+    end
+
+    #
     # Perform the crawl
     #
     def run
@@ -163,7 +179,7 @@ module Anemone
       return if @urls.empty?
 
       link_queue = Queue.new
-      page_queue = Queue.new
+      page_queue = SizedQueue.new(@opts[:pages_queue_limit])
 
       @opts[:threads].times do
         @tentacles << Thread.new { Tentacle.new(link_queue, page_queue, @opts).run }
@@ -174,22 +190,30 @@ module Anemone
       loop do
         page = page_queue.deq
         @pages.touch_key page.url
-        puts "#{page.url} Queue: #{link_queue.size}" if @opts[:verbose]
+        puts "#{page.url} Queue: #{link_queue.size} PageQueue #{page_queue.size}" if @opts[:verbose]
         do_page_blocks page
         page.discard_doc! if @opts[:discard_page_bodies]
 
-        links = links_to_follow page
-        links.each do |link|
-          link_queue << [link, page.url.dup, page.depth + 1]
+        
+        if link_queue.size < @opts[:link_limit] and !@stop_crawl
+          links = links_to_follow page
+          links.each do |link|
+            link_queue << [link, page.url.dup, page.depth + 1]
+          end
+          @pages.touch_keys links
         end
-        @pages.touch_keys links
-
+        
         @pages[page.url] = page
+
+        if @stop_crawl
+          link_queue.clear
+        end
 
         # if we are done with the crawl, tell the threads to end
         if link_queue.empty? and page_queue.empty?
           until link_queue.num_waiting == @tentacles.size
             Thread.pass
+            break unless page_queue.empty?
           end
           if page_queue.empty?
             @tentacles.size.times { link_queue << :END }

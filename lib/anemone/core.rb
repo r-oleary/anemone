@@ -195,7 +195,7 @@ module Anemone
         page.discard_doc! if @opts[:discard_page_bodies]
 
         
-        if link_queue.size < @opts[:link_limit] and !@stop_crawl
+        if link_queue.size < @opts[:link_limit] and !@end_crawl
           links = links_to_follow page
           links.each do |link|
             link_queue << [link, page.url.dup, page.depth + 1]
@@ -205,7 +205,7 @@ module Anemone
         
         @pages[page.url] = page
 
-        if @stop_crawl
+        if @end_crawl
           link_queue.clear
         end
 

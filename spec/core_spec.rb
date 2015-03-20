@@ -233,40 +233,37 @@ module Anemone
           core.pages.size.should eq(4)
         end
       
-
-      it "should stop crawl if requested" do
-        num_pages = 0
-        Anemone.crawl(@pages[0].url, @opts.merge({:pages_queue_limit => 1})) do |anemone|
-          anemone.on_every_page do
-            num_pages += 1
-            anemone.end_crawl if num_pages == 2
+        it "should stop crawl if requested" do
+          num_pages = 0
+          Anemone.crawl(@pages[0].url, @opts.merge({:pages_queue_limit => 1})) do |anemone|
+            anemone.on_every_page do
+              num_pages += 1
+              anemone.end_crawl if num_pages == 2
+            end
           end
+          num_pages.should == 2
         end
-        num_pages.should == 2
-      end
 
-      it "should limit number of links per crawl" do
-        num_pages = 0
-        Anemone.crawl(@pages[0].url, @opts.merge({:link_limit => 0})) do |anemone|
-          anemone.on_every_page do
-            num_pages += 1
+        it "should limit number of links per crawl" do
+          num_pages = 0
+          Anemone.crawl(@pages[0].url, @opts.merge({:link_limit => 0})) do |anemone|
+            anemone.on_every_page do
+              num_pages += 1
+            end
           end
+          num_pages.should == 1
         end
-        num_pages.should == 1
-      end
 
-      it "should limit pages queue per crawl" do
-        num_pages = 0
-        Anemone.crawl(@pages[0].url, @opts.merge({:pages_queue_limit => 1})) do |anemone|
-          anemone.on_every_page do
-            num_pages += 1
+        it "should limit pages queue per crawl" do
+          num_pages = 0
+          Anemone.crawl(@pages[0].url, @opts.merge({:pages_queue_limit => 1})) do |anemone|
+            anemone.on_every_page do
+              num_pages += 1
+            end
           end
+          num_pages.should == 5
         end
-        num_pages.should == 5
       end
-    
-end
-
     end
 
     describe Hash do

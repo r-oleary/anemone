@@ -77,6 +77,17 @@ module Anemone
         @links << abs if in_domain?(abs) || is_subdomain?(u)
       end
       @links.uniq!
+
+      docs = doc.search('//img[@src]')
+
+      docs.each do |a|
+        u = a['src']
+        next if u.nil? or u.empty?
+        abs = to_absolute(u) rescue next
+        @links << abs if in_domain?(abs) || is_subdomain?(u)
+      end
+      @links.uniq!
+            
       @links
     end
 

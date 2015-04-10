@@ -73,6 +73,9 @@ module Anemone
       docs.each do |a|
         u = a['href']
         next if u.nil? or u.empty?
+        # If the page ends in a "/" or doesn't have a "." in the last portion of the url
+        #  then add an "index.html". Without this, the path to child pages is incorrect
+        u = u + "/index.html" if u =~ /(\/[^\.]*|\/)$/
         abs = to_absolute(u) rescue next
         @links << abs if in_domain?(abs) || is_subdomain?(u)
       end

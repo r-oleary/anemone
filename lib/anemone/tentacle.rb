@@ -6,10 +6,10 @@ module Anemone
     #
     # Create a new Tentacle
     #
-    def initialize(link_queue, page_queue, opts = {})
+    def initialize(link_queue, page_queue, urls, opts = {})
       @link_queue = link_queue
       @page_queue = page_queue
-      @http = Anemone::HTTP.new(opts)
+      @http = Anemone::HTTP.new(urls, opts)
       @opts = opts
     end
 

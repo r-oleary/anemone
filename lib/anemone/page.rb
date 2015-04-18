@@ -50,6 +50,8 @@ module Anemone
       @error = params[:error]
       @skip_no_follow = params[:skip_no_follow]
       @follow_subdomain = params[:follow_subdomain]
+      @external_links = params[:external_links]
+      @urls = params[:urls]
 
       @fetched = !params[:code].nil?
     end
@@ -63,6 +65,9 @@ module Anemone
       return @links if !doc
       return @links if no_index?
 
+      # Don't add any links if this page is not in the crawled domains
+      return @links if !page_in_domain?
+
       docs = 
         if @skip_no_follow
           doc.search('//a[@href and not(contains(@rel, "nofollow"))]')
@@ -75,9 +80,8 @@ module Anemone
         next if u.nil? or u.empty?
         # If the page ends in a "/" or doesn't have a "." in the last portion of the url
         #  then add an "index.html". Without this, the path to child pages is incorrect
-        u = u + "/index.html" if u =~ /(\/[^\.]*|\/)$/
         abs = to_absolute(u) rescue next
-        @links << abs if in_domain?(abs) || is_subdomain?(u)
+        @links << abs if (in_domain?(abs) || is_subdomain?(u)) || @external_links        
       end
       @links.uniq!
 
@@ -87,7 +91,7 @@ module Anemone
         u = a['src']
         next if u.nil? or u.empty?
         abs = to_absolute(u) rescue next
-        @links << abs if in_domain?(abs) || is_subdomain?(u)
+        @links << abs if (in_domain?(abs) || is_subdomain?(u)) || @external_links        
       end
       @links.uniq!
             
@@ -191,7 +195,10 @@ module Anemone
       return nil if link.nil?
 
       # remove anchor
-      link = URI.encode(URI.decode(link.to_s.gsub(/#[a-zA-Z0-9_-]*$/,'')))
+      # Originally anemone did this decode/encode thing, but it screws with some
+      #  characters, like a ? for example, so I'm removing that part of it for now
+      # link = URI.encode(URI.decode(link.to_s.gsub(/#[a-zA-Z0-9_-]*$/,'')))
+      link = link.to_s.gsub(/#[a-zA-Z0-9_-]*$/,'')
 
       relative = URI(link)
       absolute = base ? base.merge(relative) : @url.merge(relative)
@@ -207,6 +214,11 @@ module Anemone
     #
     def in_domain?(uri)
       uri.host == @url.host
+    end
+
+    # Returns true if this page is in one of the crawled sites
+    def page_in_domain?
+      !@urls.select{ |u| u.host == @url.host }.empty?
     end
 
     def is_subdomain?(link)

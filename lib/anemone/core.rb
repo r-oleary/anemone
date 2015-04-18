@@ -64,7 +64,9 @@ module Anemone
       #number of crawled pages queued
       :pages_queue_limit => 1000,
       #number of unique links collected per crawl
-      :link_limit => 500000
+      :link_limit => 500000,
+      # Whether to check external links
+      :external_links => false
 
     }
 
@@ -182,7 +184,7 @@ module Anemone
       page_queue = SizedQueue.new(@opts[:pages_queue_limit])
 
       @opts[:threads].times do
-        @tentacles << Thread.new { Tentacle.new(link_queue, page_queue, @opts).run }
+        @tentacles << Thread.new { Tentacle.new(link_queue, page_queue, @urls, @opts).run }
       end
 
       @urls.each{ |url| link_queue.enq(url) }

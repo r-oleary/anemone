@@ -1,17 +1,20 @@
 require 'net/https'
 require 'anemone/page'
 require 'anemone/cookie_store'
+require 'timeout'
 
 module Anemone
   class HTTP
     # Maximum number of redirects to follow on each get_response
     REDIRECT_LIMIT = 5
-    RETRY_LIMIT = 6
+    RETRY_LIMIT = 3
+    READ_TIMEOUT = 10
 
     # CookieStore for this HTTP client
     attr_reader :cookie_store
 
-    def initialize(opts = {})
+    def initialize(urls, opts = {})
+      @urls = urls
       @opts = opts
       @cookie_store = CookieStore.new(@opts[:cookies])
     end
@@ -33,20 +36,22 @@ module Anemone
         url = URI(url) unless url.is_a?(URI)
         pages = []
         get(url, referer) do |response, headers, code, location, redirect_to, response_time|
-          pages << Page.new(location, :body => response,
-                                      :headers => headers,
-                                      :code => code,
-                                      :referer => referer,
-                                      :depth => depth,
-                                      :redirect_to => redirect_to,
-                                      :response_time => response_time,
-                                      :skip_no_follow => @opts[:skip_no_follow],
-                                      :follow_subdomain => @opts[:follow_subdomain])
-        end
-
+        pages << Page.new(location, :body => response,
+                                    :headers => headers,
+                                    :code => code,
+                                    :referer => referer,
+                                    :depth => depth,
+                                    :redirect_to => redirect_to,
+                                    :response_time => response_time,
+                                    :skip_no_follow => @opts[:skip_no_follow],
+                                    :follow_subdomain => @opts[:follow_subdomain],
+                                    :external_links => @opts[:external_links],
+                                    :urls => @urls)
         return pages
+        end
       rescue Exception => e
         if verbose?
+          puts "Problem getting: " + url.to_s
           puts e.inspect
           puts e.backtrace
         end
@@ -158,11 +163,18 @@ module Anemone
       opts[:redirect] = false
       redirect_to = nil
       retries = 0
+
       begin
         start = Time.now()
 
         begin
-          resource = open(url, opts)
+          # So, some sites will timeout but will cause this to hang, even with a read_timeout. Not
+          #  sure why, perhaps the open_timeout in Ruby 2.2 could be used here instead, but for now
+          #  we'll just use a good old fashioned Ruby timeout
+          resource = nil
+          Timeout::timeout(read_timeout || READ_TIMEOUT) {
+            resource = open(url, opts)
+          }
         rescue OpenURI::HTTPRedirect => e_redirect
           resource = e_redirect.io
           redirect_to = e_redirect.uri
